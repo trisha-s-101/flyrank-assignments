@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 
 app = FastAPI()
 
@@ -31,4 +31,15 @@ async def getOneTask(id: int):
         status_code=404,
         detail=f"Task {id} not found"
     )
-        
+
+@app.post("/tasks", status_code=201)
+async def makeTask(userTask: dict):
+    if not userTask.get("title"):
+        raise HTTPException(
+        status_code=400,
+        detail="Title of task is missing or empty"
+        )
+    
+    else:
+        userID = len(tasks) + 1
+        tasks.append({"id": userID, "title": userTask["title"], "done": False})
