@@ -43,3 +43,40 @@ async def makeTask(userTask: dict):
     else:
         userID = len(tasks) + 1
         tasks.append({"id": userID, "title": userTask["title"], "done": False})
+
+@app.put("/tasks/{id}", status_code=201)
+async def updateTask(userTask: dict):
+
+    if not userTask:
+        raise HTTPException(
+            status_code=400,
+            detail="Empty or invalid body"
+        )
+
+    id = userTask.get("id")
+    if not id:
+        raise HTTPException(
+            status_code=404,
+            detail="ID is missing"
+        )
+    
+    taskToUpdate = tasks[id-1]
+
+    if userTask.get("title"):
+        taskToUpdate["title"] = userTask["title"]
+    if userTask.get("done"):
+        taskToUpdate["done"]= userTask["done"]
+    return taskToUpdate
+
+@app.delete("/tasks/{id}", status_code=204)
+async def deleteTask(userTask: dict):
+    if not userTask.get("id"):
+        raise HTTPException(
+            status_code=404,
+            detail="Unkown ID"
+        )
+    
+    else:
+        index = userTask.get("id")-1
+        tasks.pop(index)
+        return {}
